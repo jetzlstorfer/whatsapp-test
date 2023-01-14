@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/jdkato/prose/v2"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/mdp/qrterminal/v3"
 	"go.mau.fi/whatsmeow"
@@ -19,10 +20,17 @@ func eventHandler(evt interface{}) {
 	switch v := evt.(type) {
 	case *events.Message:
 		fmt.Println("Received a message!", v.Message.GetConversation())
+		doc, _ := prose.NewDocument(v.Message.GetConversation())
+		for _, ent := range doc.Entities() {
+			fmt.Println(ent.Text, ent.Label)
+			// Lebron James PERSON
+			// Los Angeles GPE
+		}
 	}
 }
 
 func main() {
+
 	dbLog := waLog.Stdout("Database", "DEBUG", true)
 	// Make sure you add appropriate DB connector imports, e.g. github.com/mattn/go-sqlite3 for SQLite
 	container, err := sqlstore.New("sqlite3", "file:examplestore.db?_foreign_keys=on", dbLog)
